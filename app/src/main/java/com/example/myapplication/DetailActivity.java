@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +16,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private final static String TAG = DetailActivity.class.getName();
     private ActivityDetailBinding binding;
-
+    private BottomSheetFragment bottomSheetFragment;
     private Movie movie;
 
     @Override
@@ -44,11 +46,24 @@ public class DetailActivity extends AppCompatActivity {
                 .load(movie.getBackgroundImage())
                 .into(binding.backgroundImageView);
 
+        bottomSheetFragment = new BottomSheetFragment(movie);
+
     }
 
     private void addEventListener() {
         binding.showContentButton.setOnClickListener(v -> {
-            Log.d(TAG, "button clicked!");
+            addFragment();
         });
+    }
+
+    private void addFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // 잘 알려진 버그 out 시 애니메이션 처리 안됨
+        transaction.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
+        transaction.setReorderingAllowed(true);
+        transaction.addToBackStack("aaa");
+        transaction.replace(binding.bottomSheetContainer.getId(), bottomSheetFragment);
+        transaction.commit();
     }
 }

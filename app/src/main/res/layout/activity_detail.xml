@@ -5,17 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".DetailActivity">
 
         <ImageView
-            android:background="@color/black"
             android:id="@+id/backgroundImageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:background="@color/black" />
 
         <TextView
             android:id="@+id/titleTextView"
@@ -80,5 +79,14 @@
             app:layout_constraintTop_toBottomOf="@id/moviePoster" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomSheetContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        tools:layout_height="500dp" />
 
 </FrameLayout>

@@ -3,9 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/activity_detail.xml" value="0.33" />
+        <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/drawable/top_round.xml" value="0.2215" />
+        <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/activity_detail.xml" value="0.25" />
         <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/activity_main.xml" value="0.365625" />
         <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/activity_splash.xml" value="0.33" />
+        <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.33" />
         <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/fragment_info.xml" value="0.27760416666666665" />
         <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/fragment_movie.xml" value="0.33" />
         <entry key="..\:/android_workspace_git/yts_move_v1/app/src/main/res/layout/item_movie_card.xml" value="0.33" />
