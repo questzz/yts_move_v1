@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 
 import com.example.myapplication.adapter.MovieAdapter;
 import com.example.myapplication.databinding.FragmentMovieBinding;
+import com.example.myapplication.interfaces.OnPageTypeChange;
 import com.example.myapplication.models.Movie;
 import com.example.myapplication.models.YtsData;
 import com.example.myapplication.repository.MovieService;
+import com.example.myapplication.utils.Define;
 
 import java.util.List;
 
@@ -34,17 +36,18 @@ public class MovieFragment extends Fragment {
     private static MovieFragment movieFragment;
     private MovieAdapter movieAdapter;
     private LinearLayoutManager linearLayoutManager;
-
     private MovieService service;
 
-    private MovieFragment() {
-        // Required empty public constructor
+    private OnPageTypeChange onPageTypeChange;
+
+    private MovieFragment(OnPageTypeChange onPageTypeChange) {
+        this.onPageTypeChange = onPageTypeChange;
     }
 
 
-    public static MovieFragment getInstance() {
+    public static MovieFragment getInstance(OnPageTypeChange onPageTypeChange) {
         if (movieFragment == null) {
-            movieFragment = new MovieFragment();
+            movieFragment = new MovieFragment(onPageTypeChange);
         }
         return movieFragment;
     }
@@ -53,7 +56,7 @@ public class MovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         service = MovieService.retrofit.create(MovieService.class);
-
+        onPageTypeChange.typeToolbarChange(Define.PAGE_TITLE_MOVIE);
     }
 
     @Override
@@ -92,6 +95,9 @@ public class MovieFragment extends Fragment {
                     YtsData ytsData = response.body();
                     List<Movie> list = ytsData.getData().getMovies();
                     movieAdapter.addItems(list);
+
+
+                    binding.progressIndicator.setVisibility(View.GONE);
                 } else {
                    Log.d(TAG, response.errorBody().toString());
                 }

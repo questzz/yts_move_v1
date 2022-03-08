@@ -7,17 +7,21 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
+import com.example.myapplication.interfaces.OnPageTypeChange;
 import com.example.myapplication.models.YtsData;
 import com.example.myapplication.repository.MovieService;
+import com.example.myapplication.utils.Define;
 import com.example.myapplication.utils.FragmentType;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnPageTypeChange {
 
     // 1. viewBind 사용하기
     private ActivityMainBinding binding;
@@ -36,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void intData() {
-
     }
 
     private void replaceFragment(FragmentType type) {
@@ -44,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (type == FragmentType.MOVIE) {
-            fragment = MovieFragment.getInstance();
+            fragment = MovieFragment.getInstance(this);
         } else {
-            fragment = InfoFragment.getInstance();
+            fragment = InfoFragment.getInstance(this);
         }
         transaction.replace(binding.mainContainer.getId(), fragment);
         transaction.commit();
@@ -65,5 +68,21 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+    }
+
+    /**
+     * 콜백 메서드
+     * @param title : app title 변수
+     */
+    @Override
+    public void typeToolbarChange(String title) {
+        // 여기에 알람이 옴.
+        MaterialToolbar toolbar = binding.topAppBar;
+        if (title.equals(Define.PAGE_TITLE_MOVIE)) {
+            toolbar.setTitle(title);
+            toolbar.setVisibility(View.VISIBLE);
+        } else {
+            toolbar.setVisibility(View.GONE);
+        }
     }
 }
