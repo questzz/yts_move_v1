@@ -1,6 +1,8 @@
 package com.example.myapplication.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +18,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.myapplication.DetailActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Movie;
 import com.example.myapplication.models.YtsData;
+import com.example.myapplication.utils.Define;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +30,12 @@ import java.util.List;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder> {
 
     private List<Movie> list = new ArrayList<>();
-
     private static final String TAG = MovieAdapter.class.getName();
+    private Context context;
 
-
+    public MovieAdapter(Context context) {
+        this.context = context;
+    }
 
     @NonNull
     @Override
@@ -43,6 +49,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
        Movie movie = list.get(position);
        holder.setItem(movie);
+       holder.itemView.setOnClickListener(v -> {
+           Intent intent = new Intent(context, DetailActivity.class);
+           intent.putExtra(Define.PARAM_MOVIE_OBJ, movie);
+           context.startActivity(intent);
+       });
     }
 
     @Override
@@ -52,7 +63,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
 
     // 내부 클래스
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-
+        View itemView;
         ImageView posterIv;
         TextView titleTv;
         TextView ratingTv;
@@ -60,10 +71,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.itemView = itemView;
             posterIv = itemView.findViewById(R.id.posterIv);
             titleTv = itemView.findViewById(R.id.titleTv);
             ratingTv = itemView.findViewById(R.id.ratingTv);
             ratingBar = itemView.findViewById(R.id.ratingBar);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "aaaaaaa");
+                }
+            });
         }
 
         public void setItem(Movie movie) {
@@ -76,6 +95,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                     .into(posterIv);
             Log.d(TAG, "movie.getRating() :" + movie.getRating());
             ratingBar.setRating(movie.getRating());
+
+
+
         }
 
     }

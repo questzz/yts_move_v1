@@ -78,7 +78,7 @@ public class MovieFragment extends Fragment {
         // 1. 어댑터
         // 2. 매니저
         // 3. 셋팅
-        movieAdapter = new MovieAdapter();
+        movieAdapter = new MovieAdapter(getContext());
         linearLayoutManager = new LinearLayoutManager(getContext());
         binding.movieRecyclerView.setAdapter(movieAdapter);
         binding.movieRecyclerView.setLayoutManager(linearLayoutManager);
