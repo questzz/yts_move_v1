@@ -1,12 +1,14 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
@@ -37,6 +39,16 @@ public class MainActivity extends AppCompatActivity implements OnPageTypeChange 
         intData();
         addBottomNavigationListener();
         replaceFragment(FragmentType.MOVIE);
+        binding.topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.favorite) {
+                    // 새로운 화면을 띄움 !!
+                    Log.d(TAG, "1111111");
+                }
+                return true;
+            }
+        });
     }
 
     private void intData() {
@@ -84,5 +96,15 @@ public class MainActivity extends AppCompatActivity implements OnPageTypeChange 
         } else {
             toolbar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("TAG", "액티비티에서 이벤트 캐치");
+        //super.onBackPressed();
+        // 여기에서 이벤트가 들어 왔을 때
+        // 현재 화면에 movie, info 확인을 한 다음
+        // info --> movie(화면에 그려줘)
+        // movie --> (앱 종료)
     }
 }

@@ -61,6 +61,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
         return list.size();
     }
 
+
+
     // 내부 클래스
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         View itemView;
@@ -108,4 +110,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
         this.list = list;
         this.notifyDataSetChanged();
     }
+
+    public void EachItem(Movie movie) {
+        this.list.add(movie);
+        this.notifyDataSetChanged();
+    }
+
+
+    public void addItem(List<Movie> addList) {
+        list.addAll(list.size(), addList);
+        notifyDataSetChanged();
+    }
+
+
 }

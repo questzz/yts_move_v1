@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.myapplication.adapter.MovieAdapter;
 import com.example.myapplication.databinding.FragmentMovieBinding;
@@ -20,6 +21,7 @@ import com.example.myapplication.models.YtsData;
 import com.example.myapplication.repository.MovieService;
 import com.example.myapplication.utils.Define;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -39,6 +41,13 @@ public class MovieFragment extends Fragment {
     private MovieService service;
 
     private OnPageTypeChange onPageTypeChange;
+
+    private int currentPageNumber = 1;
+    private List<Movie> movieList = new ArrayList<>();
+    private boolean preventDuplicateScrollEvent = true;
+
+    private boolean isFirstFragmentStart = true;
+
 
     private MovieFragment(OnPageTypeChange onPageTypeChange) {
         this.onPageTypeChange = onPageTypeChange;
@@ -70,8 +79,14 @@ public class MovieFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         initRecyclerView();
-        requestMoviesData();
+        if (isFirstFragmentStart) {
+            requestMoviesData(currentPageNumber);
+        } else {
+            binding.progressIndicator.setVisibility(View.GONE);
+        }
+
     }
 
     private void initRecyclerView() {
@@ -79,34 +94,59 @@ public class MovieFragment extends Fragment {
         // 2. 매니저
         // 3. 셋팅
         movieAdapter = new MovieAdapter(getContext());
+        movieAdapter.addItem(movieList);
+
         linearLayoutManager = new LinearLayoutManager(getContext());
         binding.movieRecyclerView.setAdapter(movieAdapter);
         binding.movieRecyclerView.setLayoutManager(linearLayoutManager);
         binding.movieRecyclerView.hasFixedSize();
-    }
-
-    private void requestMoviesData() {
-        service.repoContributors("rating", 1, 10)
-        .enqueue(new Callback<YtsData>() {
+        binding.movieRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
-            public void onResponse(Call<YtsData> call, Response<YtsData> response) {
-                Log.d(TAG, "status code " + response.code());
-                if (response.isSuccessful()) {
-                    YtsData ytsData = response.body();
-                    List<Movie> list = ytsData.getData().getMovies();
-                    movieAdapter.addItems(list);
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (preventDuplicateScrollEvent) {
+                    int lastVisibleItemPosition = ((LinearLayoutManager) binding.movieRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    int itemTotalCount = binding.movieRecyclerView.getAdapter().getItemCount() - 1;
+                    if (lastVisibleItemPosition == itemTotalCount) {
+                        Toast.makeText(getContext(), "마지막 위치 입니다!", Toast.LENGTH_SHORT).show();
+                        if (currentPageNumber != 1) {
+                            // 통신요청 !!!!
+                            requestMoviesData(currentPageNumber);
+                            preventDuplicateScrollEvent = false;
+                        }
 
-
-                    binding.progressIndicator.setVisibility(View.GONE);
-                } else {
-                   Log.d(TAG, response.errorBody().toString());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<YtsData> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
             }
         });
+    }
+
+    private void requestMoviesData(int page) {
+
+        service.repoContributors("rating", page, 10)
+                .enqueue(new Callback<YtsData>() {
+                    @Override
+                    public void onResponse(Call<YtsData> call, Response<YtsData> response) {
+                        Log.d(TAG, "status code " + response.code());
+                        if (response.isSuccessful()) {
+                            YtsData ytsData = response.body();
+                            // List<Movie> list = ytsData.getData().getMovies();
+                            movieList = ytsData.getData().getMovies();
+                            movieAdapter.addItem(ytsData.getData().getMovies());
+                            currentPageNumber++; // 2
+                            preventDuplicateScrollEvent = true;
+                            isFirstFragmentStart = false;
+
+                            binding.progressIndicator.setVisibility(View.GONE);
+                        } else {
+                            Log.d(TAG, response.errorBody().toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<YtsData> call, Throwable t) {
+                        Log.d(TAG, t.getMessage());
+                    }
+                });
     }
 }

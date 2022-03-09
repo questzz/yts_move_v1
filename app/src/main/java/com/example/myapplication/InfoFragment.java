@@ -3,10 +3,12 @@ package com.example.myapplication;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ public class InfoFragment extends Fragment {
     private static InfoFragment infoFragment;
     private FragmentInfoBinding binding;
     private OnPageTypeChange onPageTypeChange;
+    private OnBackPressedCallback onBackPressedCallback;
 
     // 싱글톤 패턴 적용
     private InfoFragment(OnPageTypeChange onPageTypeChange) {
@@ -46,6 +49,7 @@ public class InfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentInfoBinding.inflate(inflater, container, false);
+        fragmentBackPressCustom();
         return binding.getRoot();
     }
 
@@ -76,6 +80,25 @@ public class InfoFragment extends Fragment {
         webView.loadUrl("https://yts.mx/");
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-
     }
+
+    // 프래그먼에서 뒤로가기 이벤트 커스텀 하기
+    private void fragmentBackPressCustom() {
+        onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+               Log.d("TAG", "stub!");
+            }
+        };
+
+        requireActivity().
+                getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onBackPressedCallback.remove();
+    }
+
 }
