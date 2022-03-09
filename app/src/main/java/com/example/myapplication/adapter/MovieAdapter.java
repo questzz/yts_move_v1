@@ -49,6 +49,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
        Movie movie = list.get(position);
        holder.setItem(movie);
+       //todo 옵저버 패턴 만들어서 콜백 메서드 처리 후 DetailActivity 에서 인텐트를 처리 하자!
        holder.itemView.setOnClickListener(v -> {
            Intent intent = new Intent(context, DetailActivity.class);
            intent.putExtra(Define.PARAM_MOVIE_OBJ, movie);
@@ -78,13 +79,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
             titleTv = itemView.findViewById(R.id.titleTv);
             ratingTv = itemView.findViewById(R.id.ratingTv);
             ratingBar = itemView.findViewById(R.id.ratingBar);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "aaaaaaa");
-                }
-            });
         }
 
         public void setItem(Movie movie) {
@@ -95,32 +89,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                     .placeholder(R.drawable.round_image)
                     .transform(new FitCenter(), new RoundedCorners(20))
                     .into(posterIv);
-            Log.d(TAG, "movie.getRating() :" + movie.getRating());
             ratingBar.setRating(movie.getRating());
-
-
-
         }
-
     }
 
-    // 통신으로 데이터가 전달 되면 여기 메서드로 데이를 전달 받게 한다.
     @SuppressLint("NotifyDataSetChanged")
-    public void addItems(List<Movie> list) {
-        this.list = list;
-        this.notifyDataSetChanged();
-    }
-
-    public void EachItem(Movie movie) {
-        this.list.add(movie);
-        this.notifyDataSetChanged();
-    }
-
-
     public void addItem(List<Movie> addList) {
         list.addAll(list.size(), addList);
         notifyDataSetChanged();
     }
-
-
 }

@@ -37,21 +37,26 @@ public class MainActivity extends AppCompatActivity implements OnPageTypeChange 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         intData();
+    }
+
+    private void intData() {
+        addTopAppbarEventListener();
         addBottomNavigationListener();
         replaceFragment(FragmentType.MOVIE);
+    }
+
+
+    private void addTopAppbarEventListener() {
         binding.topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.favorite) {
                     // 새로운 화면을 띄움 !!
-                    Log.d(TAG, "1111111");
+                    // 도전  Log.d(TAG, "1111111");
                 }
                 return true;
             }
         });
-    }
-
-    private void intData() {
     }
 
     private void replaceFragment(FragmentType type) {
@@ -62,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements OnPageTypeChange 
             fragment = MovieFragment.getInstance(this);
         } else {
             fragment = InfoFragment.getInstance(this);
-        }
-        transaction.replace(binding.mainContainer.getId(), fragment);
+        }                                                            // MOVIE, INFO
+        transaction.replace(binding.mainContainer.getId(), fragment, type.toString());
         transaction.commit();
     }
 
@@ -106,5 +111,13 @@ public class MainActivity extends AppCompatActivity implements OnPageTypeChange 
         // 현재 화면에 movie, info 확인을 한 다음
         // info --> movie(화면에 그려줘)
         // movie --> (앱 종료)
+        // INFO
+        String fragmentByTag  =  getSupportFragmentManager()
+                .findFragmentByTag(FragmentType.INFO.toString()).getTag();
+        if (fragmentByTag.equals(FragmentType.INFO.toString())) {
+            replaceFragment(FragmentType.MOVIE);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -5,4 +5,5 @@ public class Define {
     public static String PAGE_TITLE_MOVIE = "YTS MOVIE";
     public static String PAGE_TITLE_YTS_INFO = "WEB VIEW";
     public static String PARAM_MOVIE_OBJ = "movie obj";
+    public static String WEB_VIEW_URL = "https://yts.mx/";
 }

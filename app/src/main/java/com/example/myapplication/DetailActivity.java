@@ -24,15 +24,14 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         if (getIntent() != null) {
             movie = (Movie) getIntent().getSerializableExtra(Define.PARAM_MOVIE_OBJ);
             initData();
             addEventListener();
         }
-
     }
 
+    // 도전과제
     private void initData() {
         binding.titleTextView.setText(movie.getTitle());
         binding.yearTextView.setText( "제작년도: " + movie.getYear() + "년도");

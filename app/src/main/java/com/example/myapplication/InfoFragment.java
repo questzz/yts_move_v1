@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
@@ -18,13 +19,14 @@ import android.webkit.WebViewClient;
 
 import com.example.myapplication.databinding.FragmentInfoBinding;
 import com.example.myapplication.interfaces.OnPageTypeChange;
+import com.example.myapplication.utils.Define;
 
 
 public class InfoFragment extends Fragment {
 
     private static InfoFragment infoFragment;
     private FragmentInfoBinding binding;
-    private OnPageTypeChange onPageTypeChange;
+    private final OnPageTypeChange onPageTypeChange;
     private OnBackPressedCallback onBackPressedCallback;
 
     // 싱글톤 패턴 적용
@@ -42,14 +44,14 @@ public class InfoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        onPageTypeChange.typeToolbarChange("WEB VIEW");
+        onPageTypeChange.typeToolbarChange("Stub!");
+        fragmentBackPressCustom();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentInfoBinding.inflate(inflater, container, false);
-        fragmentBackPressCustom();
         return binding.getRoot();
     }
 
@@ -59,25 +61,17 @@ public class InfoFragment extends Fragment {
         setupWebView();
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void setupWebView() {
         WebView webView = binding.webView;
         webView.setWebViewClient(new WebViewClient() {
-
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 binding.progressIndicator.setVisibility(View.GONE);
             }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                // 웹뷰가 렌더링이 다 되었을 때 콜백 되는 메서드
-                // HTML 뼈대, CSS , javascript
-            }
         });
-
-        webView.loadUrl("https://yts.mx/");
+        webView.loadUrl(Define.WEB_VIEW_URL);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
     }
@@ -90,7 +84,6 @@ public class InfoFragment extends Fragment {
                Log.d("TAG", "stub!");
             }
         };
-
         requireActivity().
                 getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), onBackPressedCallback);
     }

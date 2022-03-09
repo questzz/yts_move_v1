@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,20 +33,16 @@ import retrofit2.Response;
 public class MovieFragment extends Fragment {
 
     private static final String TAG = MovieFragment.class.getName();
-    // view Binding
-    private FragmentMovieBinding binding;
-    // 싱글톤 패턴
-    private static MovieFragment movieFragment;
+    private FragmentMovieBinding binding; // view Binding
+    private static MovieFragment movieFragment; // 싱글톤 패턴
     private MovieAdapter movieAdapter;
-    private LinearLayoutManager linearLayoutManager;
     private MovieService service;
-
-    private OnPageTypeChange onPageTypeChange;
+    private final OnPageTypeChange onPageTypeChange;
 
     private int currentPageNumber = 1;
+    private static final int DATA_LIMIT = 20;
     private List<Movie> movieList = new ArrayList<>();
     private boolean preventDuplicateScrollEvent = true;
-
     private boolean isFirstFragmentStart = true;
 
 
@@ -96,38 +93,35 @@ public class MovieFragment extends Fragment {
         movieAdapter = new MovieAdapter(getContext());
         movieAdapter.addItem(movieList);
 
-        linearLayoutManager = new LinearLayoutManager(getContext());
-        binding.movieRecyclerView.setAdapter(movieAdapter);
-        binding.movieRecyclerView.setLayoutManager(linearLayoutManager);
-        binding.movieRecyclerView.hasFixedSize();
-        binding.movieRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        final RecyclerView recyclerView = binding.movieRecyclerView;
+
+        recyclerView.setAdapter(movieAdapter);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.hasFixedSize();
+        recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (preventDuplicateScrollEvent) {
-                    int lastVisibleItemPosition = ((LinearLayoutManager) binding.movieRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
-                    int itemTotalCount = binding.movieRecyclerView.getAdapter().getItemCount() - 1;
+                    int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    int itemTotalCount = recyclerView.getAdapter().getItemCount() - 1;
                     if (lastVisibleItemPosition == itemTotalCount) {
-                        Toast.makeText(getContext(), "마지막 위치 입니다!", Toast.LENGTH_SHORT).show();
                         if (currentPageNumber != 1) {
-                            // 통신요청 !!!!
                             requestMoviesData(currentPageNumber);
                             preventDuplicateScrollEvent = false;
                         }
-
                     }
                 }
-
             }
         });
     }
 
     private void requestMoviesData(int page) {
-
-        service.repoContributors("rating", page, 10)
+        String orderBy = "rating";
+        service.repoContributors(orderBy, page, DATA_LIMIT)
                 .enqueue(new Callback<YtsData>() {
                     @Override
                     public void onResponse(Call<YtsData> call, Response<YtsData> response) {
-                        Log.d(TAG, "status code " + response.code());
                         if (response.isSuccessful()) {
                             YtsData ytsData = response.body();
                             // List<Movie> list = ytsData.getData().getMovies();
@@ -136,9 +130,13 @@ public class MovieFragment extends Fragment {
                             currentPageNumber++; // 2
                             preventDuplicateScrollEvent = true;
                             isFirstFragmentStart = false;
-
                             binding.progressIndicator.setVisibility(View.GONE);
                         } else {
+                            // assert 란 개발자들이 디버깅을 빠르게 하기윈한 도구
+                            // 즉, 에러 검출용 코드이지 코드를 다 완성하고 동작할 때 돌아가는 함수가 아니다.
+                            // log 보다 더 효율적으로 상용 될 수 있다.
+                            // 컴파일 , 실재 앱을 배포 (컴파일러가 무시)
+                            assert response.errorBody() != null;
                             Log.d(TAG, response.errorBody().toString());
                         }
                     }
